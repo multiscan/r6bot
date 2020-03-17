@@ -1,0 +1,21 @@
+{
+  "name": "r6bot",
+  "version": "0.1.0",
+  "description": "Simple Telegram Bot for listing videogame players",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Telegram",
+    "Bot",
+    "Steam"
+  ],
+  "author": "Giovanni Cangiani",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "js-yaml": "^3.13.1",
+    "request": "^2.88.2",
+    "telegraf": "^3.36.0"
+  }
+}
