@@ -1,13 +1,39 @@
 const request = require('request');
 const Telegraf = require('telegraf')
-const YAML = require('js-yaml')
+const Data = require('./data');
 const FS = require('fs');
+const Config = require('./config');
+
+// ------------------------------------------------------------------- constants
 const SteamBUrl="https://api.steampowered.com/ISteamUser/"
 
-const Config = YAML.safeLoad(FS.readFileSync('./config.yml'));
-console.log(Config)
-const SteamIds=Config.SteamIds
-console.log(SteamIds)
+const helpMsg = `Command reference:
+/chi - List users that are playing
+/tacca STEAMID - add the given steamId to the list
+/stacca STEAMID - remove a given steamId from the list
+/lista - List all configured users
+/boh - Show this help page
+`;
+
+// ------------------------------------------------------------------- functions
+
+function logMsg(ctx) {
+    var from = userString(ctx);
+    console.log('<', ctx.message.text, from)
+}
+
+function logOutMsg(ctx, text) {
+    console.log('>', {
+        id: ctx.chat.id
+    }, text);
+}
+
+function userString(ctx) {
+    return JSON.stringify(ctx.from.id == ctx.chat.id ? ctx.from : {
+        from: ctx.from,
+        chat: ctx.chat
+    });
+}
 
 // wrap a request in an promise
 function downloadPage(url) {
@@ -22,31 +48,67 @@ function downloadPage(url) {
     });
 }
 
-async function getPlayers(ctx) {
-	var url=SteamBUrl+"GetPlayerSummaries/v2/?key=" + process.env.STEAM_KEY + "&steamids=" + SteamIds.join(",")
-	console.log("url: " + url)
-	const json = await downloadPage(url)
-	// const json = TESTJSON
-
-	players = JSON.parse(json).response.players
-	var out = ""
-	for (const player of players) {
-		if (player.gameid !== undefined) {
-			g = player.gameextrainfo === undefined ? player.gameid : player.gameextrainfo
-			p = player.realname + " (" + player.personaname +"): " + g
-			out = out + p + "\n"
-		} else {
-			p = player.realname + " (" + player.personaname +"): NO"
-		}
-
-		console.log(p)
-
-	}
-	ctx.reply(out)
+function getPlayers(ctx) {
+	Data.getPlayersSteamIds(ctx).then( player_ids => {
+		var url = SteamBUrl+"GetPlayerSummaries/v2/?key=" 
+		        + Config.steamKey + "&steamids=" + player_ids.join(",")
+		downloadPage(url).then( json => {
+			const players = JSON.parse(json).response.players
+			var out = ""
+			for (const player of players) {
+				if (player.gameid !== undefined) {
+					g = player.gameextrainfo === undefined ? player.gameid : player.gameextrainfo
+					p = player.realname + " (" + player.personaname +"): " + g
+					out = out + p + "\n"
+				}
+			}
+			ctx.reply(out)					
+		})
+	})
 }
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
-bot.command('chi', getPlayers)
+// TODO: at most 100 players allowed otherwise steam request have to be splitted
+function addPlayer(ctx) {
+ 	const m = ctx.message.text.match(/\/tacca +([0-9]+)( +(.*))?$/)
+ 	if (m === null) {
+ 		ctx.reply("Syntax Error")
+ 	} else {
+		Data.addPlayer(ctx, {steam: m[1], nick: m[3]}).then( player => {
+			ctx.reply("Ok. Player " + player.steam + " added")
+		})
+ 	}
+}
 
-// bot.command('chi', (ctx) => ctx.reply(chi()))
+function delPlayer(ctx) {
+ 	const m = ctx.message.text.match(/\/stacca +([0-9]+)$/)
+ 	if (m === null) {
+ 		ctx.reply("Syntax Error")
+ 	} else {
+ 		const steam = m[1]
+		Data.delPlayerBySteam(ctx, steam).then( (res) => {
+			ctx.reply("Ok. Player " + steam + " removed")
+		})
+ 	}
+}
+
+
+function listPlayers(ctx) {
+	Data.getPlayers(ctx).then( players => {
+		var out = ""
+		for (const player of players) {
+			out = out + player.steam + " - " + player.nick + "\n"
+		}
+		ctx.reply(out)
+	})
+}
+
+// ------------------------------------------------------------------------- bot
+// dataService.loadSteams(Config);
+const bot = new Telegraf(Config.botToken)
+bot.command('chi', getPlayers)
+// bot.command('add', )
+bot.command('boh', ctx => {ctx.reply(helpMsg)});
+bot.command('tacca', addPlayer)
+bot.command('stacca', delPlayer)
+bot.command('lista', listPlayers)
 bot.launch()

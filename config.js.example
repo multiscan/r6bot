@@ -1,0 +1,6 @@
+//change file name to "config.js"
+module.exports = {
+	botToken: process.env.BOT_TOKEN,  // or write your telegram bot token
+	steamKey: process.env.STEAM_KEY,  // or write your steam key
+	dbPath: "./db.sqlite",
+}

@@ -1,6 +1,6 @@
 {
   "name": "r6bot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple Telegram Bot for listing videogame players",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,9 @@
   "author": "Giovanni Cangiani",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "js-yaml": "^3.13.1",
     "request": "^2.88.2",
+    "sequelize": "^5.21.5",
+    "sqlite3": "^4.1.1",
     "telegraf": "^3.36.0"
   }
 }
