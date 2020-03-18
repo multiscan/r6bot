@@ -1,0 +1,31 @@
+# Note that this is inteded for development only. 
+# Passwords are hardcoded here and must not to be used in production!
+
+# docker-compose run node npm install
+# docker-compose up -d
+
+version: '3'
+services:
+  node:
+    image: "node:13"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
+    env_file: .env
+    volumes:
+      - ./:/home/node/app
+    command: "node index.js"
+
+#    networks:
+#      - traefik
+#      - default
+#    labels:
+#      - "traefik.frontend.rule=Host:r6bot.dev.jkldsa.com"
+#      - "traefik.docker.network=traefik"
+#      - "traefik.enable=true"
+#      - "traefik.port=8081"
+
+# networks:
+#  traefik:
+#    external: true
