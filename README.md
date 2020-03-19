@@ -19,10 +19,10 @@ by adding all the players with the command `tacca STEAMDID PLAYER_NAME`
  1. Copy `config.js.example` as `config.js` and edit for adding your telegram and steam api keys;
  1. Invite your bot to a telegram chat
  1. Install node packages and itialize the database with
-   * `npm install && node setup.js` or
-   * `docker-compose run node npm install` and `docker-compose run node node setup.js` 
+    * `npm install && node setup.js` or
+    * `docker-compose run node npm install` and `docker-compose run node node setup.js` 
  1. Start the bot with 
-   * `node index.js` or 
-   * `docker-compose up -d`
+    * `node index.js` or 
+    * `docker-compose up -d`
 
 
