@@ -1,4 +1,7 @@
-//change file name to "config.js"
+// copy or rename this file as "config.js". Then either
+// replace process.env.BOT_TOKEN and process.env.STEAM_KEY with your telegram 
+// token and steam api key respectively. Or 
+// create a .env file defining the BOT_TOKEN and STEAM_KEY env variables
 module.exports = {
 	botToken: process.env.BOT_TOKEN,  // or write your telegram bot token
 	steamKey: process.env.STEAM_KEY,  // or write your steam key
