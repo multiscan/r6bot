@@ -92,7 +92,13 @@ function delPlayerBySteam(ctx, steam) {
   })
 }
 
-function init(ctx, players) {
+function init() {
+  sequelize.sync().then( () => {
+    console.log("Db initialized. You can now start the bot")
+  })
+}
+
+function seed(ctx, players) {
   sequelize.sync().then( () => {
     Chat.create({uid: chatid(ctx), title: ctx.chat.title}).then( chat => {
       console.log("Chat created: " + chat.title)
@@ -114,5 +120,6 @@ module.exports = {
     getPlayersSteamIds,
     addPlayer,
     delPlayerBySteam,
+    seed,
     init,
 };

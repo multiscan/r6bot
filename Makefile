@@ -1,10 +1,9 @@
-TRAEFIK_DIR ?= $(HOME)/Projects/traefik
 KB_USER ?= multiscan
 
 .env: /keybase/private/$(KB_USER)/r6bot.env
 	cp $< $@
 
-up: .env traefik
+up: .env
 	docker-compose up -d
 	@echo "App started"
 
@@ -15,14 +14,10 @@ logs:
 	docker-compose logs -f
 
 ps:
-	@docker-compose ps
-	@./dev-script/isidor.sh status
+	docker-compose ps
 
 shell: up
-	docker-compose exec lhd-app bash
+	docker-compose exec node bash
 
-traefik:
-	cd $(TRAEFIK_DIR) && make up
-
-.PHONY: down up logs ps shell traefik
+.PHONY: down up logs ps shell
 
