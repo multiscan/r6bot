@@ -124,7 +124,11 @@ function listPlayers(ctx) {
   Data.getPlayers(ctx).then( players => {
     var out = '*' + ctx.botInfo.username + '* has ' + Object.keys(players).length + ' users in this chat:\n'
     for (const player of players) {
-      out += '  • [' + player.personaname + '](http://steamcommunity.com/profiles/' + player.steamid + ') ([#' + player.steamid + '](http://steamcommunity.com/profiles/' + player.steamid + ')) aka @' + player.tg_nick + ' on telegram \n'
+      out += '  • [' + player.personaname + '](http://steamcommunity.com/profiles/' + player.steamid + ') ([#' + player.steamid + '](http://steamcommunity.com/profiles/' + player.steamid + '))'
+      if (player.realname) {
+        out += ' aka ' + player.realname
+      }
+      out += '\n'
     }
     ctx.replyWithMarkdown(out, {disable_web_page_preview: true})
   })
