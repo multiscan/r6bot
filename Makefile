@@ -1,4 +1,4 @@
-KB_USER ?= multiscan
+KB_USER ?= ponsfrilus
 
 .env: /keybase/private/$(KB_USER)/r6bot.env
 	cp $< $@

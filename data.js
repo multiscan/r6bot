@@ -9,11 +9,39 @@ const sequelize = new Sequelize({
 
 class Player extends Model {}
 Player.init({
-  steam: {
+  steamid: {
     type: Sequelize.STRING,
     allowNull: false
   },
   nick: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  personaname: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  avatar: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  realname: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  tg_id: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  tg_nick: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  tg_first_name: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  tg_last_name: {
     type: Sequelize.STRING,
     allowNull: true
   }
@@ -50,7 +78,7 @@ function getPlayers(ctx) {
     getChat(ctx).then( chat => {
       chat.getPlayers().then( players => {
         resolve(players)
-      }) 
+      })
     })
   })
 }
@@ -59,7 +87,7 @@ function getPlayersSteamIds(ctx) {
   return new Promise((resolve, reject) => {
     getPlayers(ctx).then( players => {
       resolve(players.map( (player, index) => {
-        return player.steam
+        return player.steamid
       }))
     })
   })
@@ -69,11 +97,22 @@ function addPlayer(ctx, player) {
   return new Promise((resolve, reject) => {
     getChat(ctx).then( chat => {
       Player
-        .findOrCreate({where: {steam: player.steam}, defaults: {nick: player.nick}})
+        // TODO: upsert or update in case user data have changed
+        .findOrCreate({where: {steamid: player.steamid}, defaults:
+            { nick: player.nick,
+              personaname: player.personaname,
+              avatar: player.avatar,
+              realname: player.realname,
+              tg_id: player.tg_id,
+              tg_nick: player.tg_nick,
+              tg_first_name: player.tg_first_name,
+              tg_last_name: player.tg_last_name
+            }
+        })
         .then( ([player, created]) => {
           chat.addPlayer(player)
-              .then(msg => {console.log("Added player " + player.steam + " to chat " + chat.title); resolve(player)})
-              .catch(err => {console.log("Player " + player.steam + " already in chat " + chat.title)})
+              .then(msg => {console.log("Added player " + player.steamid + " to chat " + chat.title); resolve(player)})
+              .catch(err => {console.log("Player " + player.steamid + " already in chat " + chat.title)})
         })
     })
   })
@@ -82,7 +121,7 @@ function addPlayer(ctx, player) {
 function delPlayerBySteam(ctx, steam) {
   return new Promise((resolve, reject) => {
     getChat(ctx).then(chat => {
-      chat.getPlayers({where: {steam: steam}}).then(player => {
+      chat.getPlayers({where: {steamid: steamid}}).then(player => {
         chat.removePlayer(player).then(() => {
           // TODO also remove player from DB if no longer associated
           resolve(true)
@@ -104,13 +143,13 @@ function seed(ctx, players) {
       console.log("Chat created: " + chat.title)
       for (const player of players) {
         Player.create(player).then ( player => {
-          console.log("Player created: " + player.steam)
+          console.log("Player created: " + player.steamid)
           chat.addPlayer(player)
-              .then(msg => {console.log("Added player " + player.steam + " to chat " + chat.title)})
-              .catch(err => {console.log("Player " + player.steam + " already in chat " + chat.title)})
+              .then(msg => {console.log("Added player " + player.steamid + " to chat " + chat.title)})
+              .catch(err => {console.log("Player " + player.steamid + " already in chat " + chat.title)})
         })
       }
-    })    
+    })
   })
 }
 
