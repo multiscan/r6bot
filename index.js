@@ -1,4 +1,3 @@
-//const request = require('request')
 const request = require('async-request')
 const Telegraf = require('telegraf')
 const Data = require('./data')
@@ -20,7 +19,6 @@ Command reference:
 *Note*: use [steamid.io](https://steamid.io) to find your steamId. This bot needs the *steamID64*.`
 
 // ------------------------------------------------------------------- functions
-
 function logMsg(ctx) {
   var from = userString(ctx)
   console.log('<', ctx.message.text, from)
@@ -36,19 +34,6 @@ function userString(ctx) {
   return JSON.stringify(ctx.from.id == ctx.chat.id ? ctx.from : {
     from: ctx.from,
     chat: ctx.chat
-  })
-}
-
-// wrap a request in an promise
-function OLDdownloadPage(url) {
-  return new Promise((resolve, reject) => {
-    request(url, (error, response, body) => {
-      if (error) reject(error)
-      if (response.statusCode != 200) {
-        reject('Invalid status code <' + response.statusCode + '>')
-      }
-      resolve(body)
-    })
   })
 }
 
@@ -147,7 +132,6 @@ function listPlayers(ctx) {
 }
 
 // ------------------------------------------------------------------------- bot
-// dataService.loadSteams(Config)
 const bot = new Telegraf(Config.botToken)
 bot.command('chi', getPlayers)
 bot.command('get', getPlayers)
