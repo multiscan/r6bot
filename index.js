@@ -8,19 +8,19 @@ const Config = require('./config')
 // ------------------------------------------------------------------- constants
 const SteamBUrl="https://api.steampowered.com/ISteamUser/"
 
-const helpMsg = `Command reference:
-/chi - List users that are playing
-/tacca STEAMID - add the given steamId to the list
-/stacca STEAMID - remove a given steamId from the list
-/lista - List all configured users
-/boh - Show this help page
-`
+const helpMsg = `This bot helps steam player community to play together. Add the bot in a group, add players' steamId and then use /get to see who's online.
+
+Command reference:
+  • /chi → \`List users that are playing\`
+  • /tacca STEAMID → \`add the given steamId to the list\`
+  • /stacca STEAMID → \`remove a given steamId from the list\`
+  • /lista → \`List all configured users\`
+  • /boh → \`Show this help page\`
+
+*Note*: use [steamid.io](https://steamid.io) to find your steamId. This bot needs the *steamID64*.`
 
 // ------------------------------------------------------------------- functions
 
-function start(ctx) {
-  ctx.reply(helpMsg)
-}
 function logMsg(ctx) {
   var from = userString(ctx)
   console.log('<', ctx.message.text, from)
@@ -151,13 +151,13 @@ function listPlayers(ctx) {
 const bot = new Telegraf(Config.botToken)
 bot.command('chi', getPlayers)
 bot.command('get', getPlayers)
-bot.command('help', ctx => {ctx.reply(helpMsg)})
-bot.command('boh', ctx => {ctx.reply(helpMsg)})
+bot.command('help', ctx => {ctx.replyWithMarkdown(helpMsg, {disable_web_page_preview: true})})
+bot.command('boh', ctx => {ctx.replyWithMarkdown(helpMsg, {disable_web_page_preview: true})})
+bot.command('start', ctx => {ctx.replyWithMarkdown(helpMsg, {disable_web_page_preview: true})})
 bot.command('add', addPlayer)
 bot.command('tacca', addPlayer)
 bot.command('rm', delPlayer)
 bot.command('stacca', delPlayer)
 bot.command('lista', listPlayers)
 bot.command('list', listPlayers)
-bot.command('start', start)
 bot.launch()
