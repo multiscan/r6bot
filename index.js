@@ -120,14 +120,13 @@ function delPlayer(ctx) {
   }
 }
 
-
 function listPlayers(ctx) {
   Data.getPlayers(ctx).then( players => {
-    var out = ""
+    var out = '*' + ctx.botInfo.username + '* has ' + Object.keys(players).length + ' users in this chat:\n'
     for (const player of players) {
-      out = out + player.steamid + " - " + player.nick + "\n"
+      out += '  • [' + player.personaname + '](http://steamcommunity.com/profiles/' + player.steamid + ') ([#' + player.steamid + '](http://steamcommunity.com/profiles/' + player.steamid + ')) aka @' + player.tg_nick + ' on telegram \n'
     }
-    ctx.reply(out)
+    ctx.replyWithMarkdown(out, {disable_web_page_preview: true})
   })
 }
 
