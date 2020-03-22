@@ -3,11 +3,11 @@
 This is a simple telegram bot that accept the following commands:
 
 ```
-/chi                       - List users that are playing
-/tacca STEAMID PLAYER_NAME - add the given steamId to the list
-/stacca STEAMID            - remove a given steamId from the list
-/lista                     - List all configured users
-/boh                       - Show this help page
+/chi                         - List users that are playing
+/tacca STEAMID [PLAYER_NAME] - add the given steamId to the list
+/stacca STEAMID              - remove a given steamId from the list
+/lista                       - List all configured users
+/boh                         - Show this help page
 ```
 
 The list of users is different for each chat and will have to be created 

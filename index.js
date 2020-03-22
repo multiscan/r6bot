@@ -11,10 +11,13 @@ const helpMsg = `This bot helps steam player community to play together. Add the
 
 Command reference:
   • /chi → \`List users that are playing\`
-  • /tacca STEAMID → \`add the given steamId to the list\`
+  • /get → \`List users that are playing\`
+  • /tacca STEAMID → \`add the given steamId to the list.\`
+  • /tacca STEAMID NICK → \`add the given steamId to the list and use the provided NICK in listing.\`
   • /stacca STEAMID → \`remove a given steamId from the list\`
   • /lista → \`List all configured users\`
   • /boh → \`Show this help page\`
+  /add, /rm, /list are aliases for /tacca, /stacca, /lista.
 
 *Note*: use [steamid.io](https://steamid.io) to find your steamId. This bot needs the *steamID64*.`
 
@@ -57,7 +60,7 @@ function getPlayers(ctx) {
           + Config.steamKey + "&steamids=" + player_ids.join(",")
   downloadPage(url).then( json => {
     const players = JSON.parse(json).response.players
-    console.log(players)
+    // console.log(players)
     var out = ""
     for (const player of players) {
       if (player.gameid !== undefined) {
@@ -77,7 +80,6 @@ async function validateSteamID(id) {
   // console.debug('url', url)
   let json = await downloadPage(url)
   const player = JSON.parse(json).response.players[0]
-  // console.debug(player)
   if (player && 'steamid' in player) {
     return player
   } else {
@@ -87,11 +89,11 @@ async function validateSteamID(id) {
 
 // TODO: at most 100 players allowed otherwise steam request have to be splitted
 async function addPlayer(ctx) {
-  const m = ctx.message.text.match(/^\/tacca|\/add +([0-9]+)( +(.*))?$/)
+  const m = ctx.message.text.match(/^(\/tacca|\/add) +([0-9]+)( +(.*))?$/)
   if (m === null) {
     ctx.reply("Syntax Error")
   } else {
-    player = await validateSteamID(m[1])
+    player = await validateSteamID(m[2])
     if (player) {
       player.nick = m[3]
       player.tg_id = ctx.message.from.id
@@ -109,11 +111,11 @@ async function addPlayer(ctx) {
 }
 
 function delPlayer(ctx) {
-  const m = ctx.message.text.match(/^\/stacca|\/rm +([0-9]+)$/)
+  const m = ctx.message.text.match(/^(\/stacca|\/rm) +([0-9]+)$/)
   if (m === null) {
     ctx.reply("Syntax Error")
   } else {
-    const steamid = m[1]
+    const steamid = m[2]
     Data.delPlayerBySteam(ctx, steamid).then( (res) => {
       ctx.reply("Ok. Player " + steamid + " removed")
     })
@@ -124,7 +126,7 @@ function listPlayers(ctx) {
   Data.getPlayers(ctx).then( players => {
     var out = '*' + ctx.botInfo.username + '* has ' + Object.keys(players).length + ' users in this chat:\n'
     for (const player of players) {
-      out += '  • [' + player.personaname + '](http://steamcommunity.com/profiles/' + player.steamid + ') ([#' + player.steamid + '](http://steamcommunity.com/profiles/' + player.steamid + '))'
+      out += '  • [' + (player.nick || player.personaname) + '](http://steamcommunity.com/profiles/' + player.steamid + ') ([#' + player.steamid + '](http://steamcommunity.com/profiles/' + player.steamid + '))'
       if (player.realname) {
         out += ' aka ' + player.realname
       }
