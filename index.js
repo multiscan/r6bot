@@ -69,7 +69,11 @@ function getPlayers(ctx) {
           out = out + p + "\n"
       }
     }
-    ctx.reply(out)
+    if (out == "") {
+      ctx.reply("No one playing right now.")
+    } else {
+      ctx.reply(out)
+    }
     })
   })
 }
